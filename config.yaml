@@ -1,0 +1,98 @@
+# Economic Dispatch Optimization Configuration
+# Project Configuration File
+
+system:
+  name: "Economic Dispatch Test System"
+  n_generators: 5
+  base_demand: 500.0  # MW
+  simulation_timesteps: 288  # 24 hours with 5-minute intervals
+  timestep_duration: 5  # minutes
+
+generators:
+  # Generator parameters: [alpha ($/h), beta ($/MWh), gamma ($/MW^2h), P_min (MW), P_max (MW), emission_rate (kg CO2/MWh)]
+  gen_1:
+    name: "Coal Plant"
+    alpha: 150.0
+    beta: 30.0
+    gamma: 0.02
+    p_min: 50.0
+    p_max: 200.0
+    emission_rate: 950.0
+    ramp_rate: 5.0  # MW/min
+
+  gen_2:
+    name: "Natural Gas CCGT"
+    alpha: 100.0
+    beta: 35.0
+    gamma: 0.015
+    p_min: 30.0
+    p_max: 180.0
+    emission_rate: 450.0
+    ramp_rate: 10.0
+
+  gen_3:
+    name: "Gas Turbine"
+    alpha: 50.0
+    beta: 45.0
+    gamma: 0.03
+    p_min: 20.0
+    p_max: 120.0
+    emission_rate: 600.0
+    ramp_rate: 15.0
+
+  gen_4:
+    name: "Peaker Plant"
+    alpha: 30.0
+    beta: 60.0
+    gamma: 0.04
+    p_min: 10.0
+    p_max: 80.0
+    emission_rate: 800.0
+    ramp_rate: 20.0
+
+  gen_5:
+    name: "Nuclear"
+    alpha: 200.0
+    beta: 20.0
+    gamma: 0.001
+    p_min: 100.0
+    p_max: 300.0
+    emission_rate: 0.0
+    ramp_rate: 1.0
+
+renewable:
+  solar_capacity: 150.0  # MW
+  wind_capacity: 100.0  # MW
+  variability_factor: 0.3
+
+rl_training:
+  algorithm: "PPO"
+  total_timesteps: 1000000
+  learning_rate: 0.001
+  n_steps: 2048
+  batch_size: 128
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.05
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+
+reward:
+  cost_weight: 1.0
+  emission_weight: 0.0  # Set to 0 for single-objective (cost only)
+  balance_penalty: 10000.0
+  limit_penalty: 5000.0
+  ramp_penalty: 100.0
+
+baseline:
+  solver: "highs"  # Options: highs, gurobi, cplex, glpk
+  time_limit: 300  # seconds
+  gap_tolerance: 0.01
+
+paths:
+  data_dir: "data"
+  models_dir: "models"
+  results_dir: "results"
+  logs_dir: "logs"

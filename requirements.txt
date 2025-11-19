@@ -1,0 +1,28 @@
+# Core Dependencies
+pypsa
+numpy
+pandas
+scipy
+
+# Reinforcement Learning
+gymnasium
+stable-baselines3
+tensorboard
+
+# Optimization
+cvxpy
+pyomo
+highspy
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Data Processing
+openpyxl
+xlrd
+
+# Utilities
+tqdm
+pyyaml
