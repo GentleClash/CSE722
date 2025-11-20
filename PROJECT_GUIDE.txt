@@ -1,0 +1,101 @@
+ECONOMIC DISPATCH OPTIMIZATION PROJECT
+========================================
+
+This file describes the project structure and provides instructions on how to run the code.
+
+1. QUICK START
+--------------
+To run the entire pipeline from start to finish (Data Generation -> Baseline -> Training -> Benchmarking), run:
+
+    python3 main.py --mode full
+
+This will:
+1. Generate training and testing data.
+2. Run the Classical Optimization (PyPSA) baseline.
+3. Train the RL Agent (PPO).
+4. Benchmark all methods and compare results.
+
+2. EXECUTION MODES (main.py)
+----------------------------
+The `main.py` script is the central entry point. You can run specific parts of the pipeline using the `--mode` argument.
+
+A. Generate Data Only
+   Generates synthetic demand, solar, and wind data based on the models described in Report.md.
+   
+   Command:
+       python3 main.py --mode data --train-days 7 --test-days 1
+
+B. Run Baseline Models
+   Runs the Classical Optimization (LP) and Heuristic Dispatch on the test data.
+   
+   Command:
+       python3 main.py --mode baseline
+
+C. Train RL Agent
+   Trains the PPO agent on the generated training data.
+   
+   Command:
+       python3 main.py --mode train --timesteps 100000
+
+D. Benchmark & Compare
+   Runs all three methods (Classical, Heuristic, RL) on test data and generates comparison metrics.
+   Requires a trained model file.
+   
+   Command:
+       python3 main.py --mode benchmark --rl-model models/ppo_economic_dispatch_final.zip
+
+3. VISUALIZATION
+----------------
+To generate the comprehensive set of project visualizations (including the new Combined Renewable Generation plot):
+
+    python3 results/visualizations/charts.py
+
+To generate specific comparison plots (Cost, Balance Error, Dispatch Schedules):
+
+    python3 benchmarks/three_way_plots.py
+
+4. FILE STRUCTURE & DESCRIPTION
+-------------------------------
+
+├── main.py                     # ENTRY POINT. Orchestrates the entire workflow.
+├── config.yaml                 # Configuration file for system parameters (generators, costs, etc.).
+├── Report.md                   # Detailed project documentation and mathematical formulation.
+│
+├── baseline/                   # Classical and Heuristic approaches
+│   ├── classical_solver.py     # PyPSA-based Linear Programming solver.
+│   └── heuristic_dispatch.py   # Rule-based Merit Order dispatcher.
+│
+├── environment/                # Reinforcement Learning Environment
+│   └── economic_dispatch_env.py # Custom Gymnasium environment defining the MDP.
+│
+├── rl_agent/                   # RL Agent Implementation
+│   └── train_ppo.py            # Script to train the PPO agent using Stable-Baselines3.
+│
+├── benchmarks/                 # Evaluation and Comparison
+│   ├── compare_methods.py      # Class for running comparisons and calculating metrics.
+│   ├── run_all_three.py        # Script to execute all methods and aggregate results.
+│   └── three_way_plots.py      # Generates comparison plots (Cost, Error, Schedules).
+│
+├── results/                    # Output Directory
+│   ├── visualizations/         # Generated plots (charts.py output).
+│   ├── classical_results.csv   # Results from classical solver.
+│   ├── heuristic_results.csv   # Results from heuristic dispatcher.
+│   ├── ppo_results.csv         # Results from RL agent.
+│   └── three_way_summary.csv   # Summary table of performance metrics.
+│
+└── data/                       # Data Directory
+    ├── train_data.csv          # Generated training dataset.
+    └── test_data.csv           # Generated testing dataset.
+
+5. HOW TO RUN INDIVIDUAL SCRIPTS
+--------------------------------
+While `main.py` is preferred, you can run individual components if needed:
+
+- To train the agent directly:
+  python3 rl_agent/train_ppo.py --timesteps 500000
+
+- To run the comprehensive benchmark directly:
+  python3 benchmarks/run_all_three.py --rl-model models/ppo_economic_dispatch_final.zip
+
+- To generate model visualizations:
+  python3 results/visualizations/charts.py
